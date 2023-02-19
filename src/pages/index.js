@@ -3,30 +3,17 @@ import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import axios from 'axios'
 import uuid from 'react-uuid'
+import Product from '@/components/Product'
 
 const inter = Inter({ subsets: ['latin'] })
 const scrollThreshold = 1.2;
 
 export default function Home({ products }) {
+  // Create states to hold our currently displayed items and the index pointer
   const [scrollItems, setScrollItems] = useState([]);
   const [scrollIndex, setScrollIndex] = useState(3);
 
-  const Product = ({ product }) => {
-    if (product) {
-      const curr = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-      });
-      return (
-        <div className="product">
-          <h2>{product.title}</h2>
-          <h3>{curr.format(product.price)}</h3>
-          <img src={product.image} alt={product.title} />
-        </div>
-      )
-    }
-  }
-
+  // We'll use a layout effect to observe the scroll position of the bottom of the list
   useLayoutEffect(() => {
     const main = document.querySelector('main');
     const ele = document.querySelector('#products-bottom');
@@ -43,6 +30,7 @@ export default function Home({ products }) {
     return () => main.removeEventListener('scroll', handleScroll)
   })
 
+  // Initialize the displayed items with 3 products whenever products changes
   useEffect(() => {
     const setInitialItems = () => {
       setScrollItems([
@@ -54,6 +42,7 @@ export default function Home({ products }) {
     setInitialItems();
   }, [products])
 
+  // Add more products when scroll threshold is reached
   const handleScrollItems = () => {
     if (scrollIndex + 1 >= scrollIndex.length) return;
 
@@ -85,6 +74,7 @@ export default function Home({ products }) {
   )
 }
 
+// Get our props from the remote API via ISR
 export async function getStaticProps() {
   let products = [];
 
