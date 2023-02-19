@@ -1,3 +1,4 @@
+// index.js
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
