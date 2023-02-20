@@ -7,6 +7,7 @@ import uuid from 'react-uuid'
 import Product from '@/components/Product'
 
 const inter = Inter({ subsets: ['latin'] })
+// Multiplier to adjust scroll threshold, greater than unity scrolls sooner
 const scrollThreshold = 1.2;
 
 export default function Home({ products }) {
@@ -26,7 +27,7 @@ export default function Home({ products }) {
       }
     }
 
-    main.addEventListener('scroll', handleScroll)
+    main.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => main.removeEventListener('scroll', handleScroll)
   })

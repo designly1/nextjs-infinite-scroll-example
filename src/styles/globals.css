@@ -1,6 +1,13 @@
-html, body {
+/* globals.css */
+html,
+body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
+}
+
+body {
+  position: relative;
 }
 
 main {
@@ -14,7 +21,8 @@ main {
   bottom: 0;
   right: 0;
   left: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .container {
