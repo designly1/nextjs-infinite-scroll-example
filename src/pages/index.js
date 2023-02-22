@@ -1,61 +1,25 @@
 // index.js
-import React, { useState, useEffect, useLayoutEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import axios from 'axios'
 import uuid from 'react-uuid'
 import Product from '@/components/Product'
+import useInfiniteScroll from '@/hooks/useInfiniteScroll'
 
 const inter = Inter({ subsets: ['latin'] })
-// Multiplier to adjust scroll threshold, greater than unity scrolls sooner
-const scrollThreshold = 1.2;
 
 export default function Home({ products }) {
-  // Create states to hold our currently displayed items and the index pointer
-  const [scrollItems, setScrollItems] = useState([]);
-  const [scrollIndex, setScrollIndex] = useState(3);
+  // Create state to store number of products to display
+  const [displayProducts, setDisplayProducts] = useState(3);
 
-  // We'll use a layout effect to observe the scroll position of the bottom of the list
-  useLayoutEffect(() => {
-    const main = document.querySelector('main');
-    const ele = document.querySelector('#products-bottom');
-    const handleScroll = () => {
-      const mainPos = main.scrollTop;
-      const elePos = ele.getBoundingClientRect().y;
-      if ((elePos * scrollThreshold) < mainPos) {
-        handleScrollItems();
-      }
-    }
-
-    main.addEventListener('scroll', handleScroll, { passive: true })
-
-    return () => main.removeEventListener('scroll', handleScroll)
-  })
-
-  // Initialize the displayed items with 3 products whenever products changes
-  useEffect(() => {
-    const setInitialItems = () => {
-      setScrollItems([
-        <Product key={uuid()} product={products[0]} />,
-        <Product key={uuid()} product={products[1]} />,
-        <Product key={uuid()} product={products[2]} />
-      ]);
-    }
-    setInitialItems();
-  }, [products])
-
-  // Add more products when scroll threshold is reached
-  const handleScrollItems = () => {
-    if (scrollIndex + 1 >= scrollIndex.length) return;
-
-    const moreItems = [];
-    moreItems.push(
-      <Product key={uuid()} product={products[scrollIndex]} />,
-      <Product key={uuid()} product={products[scrollIndex + 1]} />
-    );
-    setScrollIndex(oldVal => oldVal + 2);
-    setScrollItems(scrollItems => [...scrollItems, moreItems]);
-  }
+  // Invoke our custom hook
+  useInfiniteScroll({
+    trackElement: '#products-bottom',
+    containerElement: '#main'
+  }, () => {
+    setDisplayProducts(oldVal => oldVal + 3);
+  });
 
   return (
     <>
@@ -65,10 +29,14 @@ export default function Home({ products }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={inter.className}>
+      <main id="main" className={inter.className}>
         <div className="container">
           <h1 style={{ textAlign: 'center' }}>Products Catalog</h1>
-          {scrollItems}
+          {
+            products.slice(0, displayProducts).map((product) => (
+              <Product key={uuid()} product={product} />
+            ))
+          }
           <div id="products-bottom"></div>
         </div>
       </main>
